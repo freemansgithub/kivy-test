@@ -1,31 +1,98 @@
 <CityHunterRoot>:
+    id: map
+    name: 'map'
+
+    MapView:
+        id: map_widget
+        lat: 50.6394
+        lon: 3.057
+        zoom: 13
+
+        MapMarker:
+            lat: 50.6394
+            lon: 3.057
 
     Label:
-        id: label_text
-        text: "0"
-        font_size: "30dp"
+        id: status
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, .7
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        size_hint: (None, None)
+        size: dp(155), dp(120)
+        pos: root.width - self.width - dp(10), root.height - self.height - dp(10)
+        text: 'Welcome, {0}'.format(app.user)
+        font_name: 'Roboto'
+        font_size: '13sp'
+        color: 0, 0, 0, 1
 
     BoxLayout:
-        orientation: "horizontal"
-        spacing: "30dp"
+        size_hint_y: None
+        height: dp(48)
+        padding: dp(10), dp(4)
+        spacing: dp(10)
+        ToggleButton:
+            id: gps_status_btn
+            text: 'Start GPS' if self.state == 'normal' else 'Stop GPS'
+        Button:
+            text: "I am here"
+            on_press: status.text = 'I am here'
+        Button:
+            text: "Menu"
+            on_press: root.show_menu(app.user)
+
+<LoginPopup>
+    id: login_popup
+    name: 'login_popup'
+    title: 'Please Authenticate'
+    size_hint: 0.7, 0.7
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: None
+        height: dp(144)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        padding: dp(20), 0
+
+        TextInput:
+            id: username
+            hint_text: 'Username'
+
+        TextInput:
+            id: password
+            password: True
+            hint_text: 'Password'
 
         Button:
-            text: "Add"
-            on_release: label_text.text = str(int(label_text.text) + 1)
+            id: login_btn
+            size_hint_y: None
+            height: dp(48)
+            text: 'Login'
+            on_press: app.login(login_popup.ids.username.text, login_popup.ids.password.text)
 
+<MenuPopup>:
+    title: 'What do you want?'
+    size_hint: None, None
+    size: dp(300), dp(167)
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(4)
         Button:
-            text: "Subtract"
-            on_release: label_text.text = str(int(label_text.text) - 1)
-
-    TextInput:
-        id: text_input
-        hint_text: "Enter Name"
-        font_size: "30dp"
-
-    Button:
-        text: "Login"
-        on_press: root.login(text_input.text)
-
-    Button:
-        text: 'Menu'
-        on_press: root.menu(text_input.text)
+            text: 'Logout'
+            size_hint_y: None
+            height: dp(48)
+            on_press: app.logout()
+        Button:
+            text: 'Quit'
+            size_hint_y: None
+            height: dp(48)
+            on_press: app.stop()
